@@ -28,7 +28,7 @@ export function Transactions() {
                 <td width="50%">{tx.description}</td>
                 <td>
                   <PriceHighlight variant={tx.type}>
-                    {tx.type === 'outcome' && '- '}
+                    {tx.type === 'outcome' && <span>-&nbsp;</span>}
                     {currencyFormatter.format(tx.value)}
                   </PriceHighlight>
                 </td>

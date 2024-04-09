@@ -1,7 +1,7 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useEffect, useState } from 'react'
 
 export interface Transaction {
-  id: string
+  id: number
   description: string
   type: 'income' | 'outcome'
   value: number
@@ -13,10 +13,12 @@ type RawTransaction = Omit<Transaction, 'createdAt'> & { createdAt: string }
 
 interface TransactionsContextType {
   transactions: Transaction[]
+  fetchTransactions: (query?: string) => Promise<void>
 }
 
 export const TransactionsContext = createContext<TransactionsContextType>({
   transactions: [],
+  fetchTransactions: async () => {},
 })
 
 export function TransactionsProvider({
@@ -26,21 +28,29 @@ export function TransactionsProvider({
 }) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
-  useEffect(() => {
-    fetch('http://localhost:3333/transactions')
-      .then((response) => response.json())
-      .then((data: RawTransaction[]) => {
-        return setTransactions(
-          data.map((tx) => ({
-            ...tx,
-            createdAt: new Date(tx.createdAt),
-          })),
-        )
-      })
+  const fetchTransactions = useCallback(async (query?: string) => {
+    const url = new URL('http://localhost:3333/transactions')
+    if (query) {
+      url.searchParams.append('q', query)
+    }
+
+    const response = await fetch(url)
+    const data = await response.json()
+
+    setTransactions(
+      data.map((tx: RawTransaction) => ({
+        ...tx,
+        createdAt: new Date(tx.createdAt),
+      })),
+    )
   }, [])
 
+  useEffect(() => {
+    fetchTransactions()
+  }, [fetchTransactions])
+
   return (
-    <TransactionsContext.Provider value={{ transactions }}>
+    <TransactionsContext.Provider value={{ transactions, fetchTransactions }}>
       {children}
     </TransactionsContext.Provider>
   )
