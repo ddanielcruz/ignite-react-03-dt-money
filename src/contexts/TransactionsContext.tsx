@@ -1,5 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from 'react'
 
+import { api } from '../lib/axios'
+
 export interface Transaction {
   id: number
   description: string
@@ -9,15 +11,21 @@ export interface Transaction {
   createdAt: Date
 }
 
-type RawTransaction = Omit<Transaction, 'createdAt'> & { createdAt: string }
+type ApiTransaction = Omit<Transaction, 'createdAt'> & {
+  createdAt: string
+}
+
+export type CreateTransactionData = Omit<Transaction, 'id' | 'createdAt'>
 
 interface TransactionsContextType {
   transactions: Transaction[]
+  createTransaction: (data: CreateTransactionData) => Promise<void>
   fetchTransactions: (query?: string) => Promise<void>
 }
 
 export const TransactionsContext = createContext<TransactionsContextType>({
   transactions: [],
+  createTransaction: async () => {},
   fetchTransactions: async () => {},
 })
 
@@ -28,17 +36,33 @@ export function TransactionsProvider({
 }) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
-  const fetchTransactions = useCallback(async (query?: string) => {
-    const url = new URL('http://localhost:3333/transactions')
-    if (query) {
-      url.searchParams.append('q', query)
-    }
+  const createTransaction = useCallback(async (data: CreateTransactionData) => {
+    const { description, value, category, type } = data
+    const response = await api.post<ApiTransaction>('/transactions', {
+      description,
+      value,
+      category,
+      type,
+      createdAt: new Date(),
+    })
 
-    const response = await fetch(url)
-    const data = await response.json()
+    setTransactions((prevTransactions) => [
+      { ...response.data, createdAt: new Date(response.data.createdAt) },
+      ...prevTransactions,
+    ])
+  }, [])
+
+  const fetchTransactions = useCallback(async (query?: string) => {
+    const response = await api.get('/transactions', {
+      params: {
+        _sort: 'createdAt',
+        _order: 'desc',
+        q: query,
+      },
+    })
 
     setTransactions(
-      data.map((tx: RawTransaction) => ({
+      response.data.map((tx: ApiTransaction) => ({
         ...tx,
         createdAt: new Date(tx.createdAt),
       })),
@@ -50,7 +74,13 @@ export function TransactionsProvider({
   }, [fetchTransactions])
 
   return (
-    <TransactionsContext.Provider value={{ transactions, fetchTransactions }}>
+    <TransactionsContext.Provider
+      value={{
+        transactions,
+        createTransaction,
+        fetchTransactions,
+      }}
+    >
       {children}
     </TransactionsContext.Provider>
   )

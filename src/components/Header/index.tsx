@@ -1,12 +1,12 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
-import { NewTransactionModal } from '../NewTransactionModal'
 import {
   HeaderContainer,
   HeaderContent,
   HeaderBrand,
   NewTransactionButton,
 } from './styles'
+import { NewTransactionModal } from '../NewTransactionModal'
 
 export function Header() {
   return (

@@ -1,13 +1,13 @@
-import { useTheme } from 'styled-components'
 import {
   ArrowCircleDown,
   ArrowCircleUp,
   CurrencyDollar,
 } from '@phosphor-icons/react'
+import { useTheme } from 'styled-components'
 
 import { SummaryCard, SummaryContainer } from './styles'
-import { currencyFormatter } from '../../utils/formatter'
 import { useSummary } from '../../hooks/useSummary'
+import { currencyFormatter } from '../../utils/formatter'
 
 export function Summary() {
   const theme = useTheme()

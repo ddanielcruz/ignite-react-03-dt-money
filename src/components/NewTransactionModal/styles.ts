@@ -1,6 +1,6 @@
-import { styled } from 'styled-components'
 import * as Dialog from '@radix-ui/react-dialog'
 import * as RadioGroup from '@radix-ui/react-radio-group'
+import { styled } from 'styled-components'
 
 export const Overlay = styled(Dialog.Overlay)`
   position: fixed;
@@ -50,10 +50,15 @@ export const Content = styled(Dialog.Content)`
       border-radius: 6px;
       margin-top: 1.5rem;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
 
-      &:hover {
+      &:not(:disabled):hover {
         background: ${({ theme }) => theme['green-700']};
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
       }
     }
   }
