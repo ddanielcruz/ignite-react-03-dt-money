@@ -1,0 +1,20 @@
+{
+  "transactions": [
+    {
+      "id": "1",
+      "description": "Desenvolvimento de site",
+      "type": "income",
+      "value": 12000,
+      "category": "Desenvolvimento",
+      "createdAt": "2024-04-09T18:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "description": "Aluguel do apartamento",
+      "type": "outcome",
+      "value": 1200,
+      "category": "Casa",
+      "createdAt": "2024-04-10T12:00:00.000Z"
+    }
+  ]
+}

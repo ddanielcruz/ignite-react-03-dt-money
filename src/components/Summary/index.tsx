@@ -6,9 +6,12 @@ import {
 } from '@phosphor-icons/react'
 
 import { SummaryCard, SummaryContainer } from './styles'
+import { currencyFormatter } from '../../utils/formatter'
+import { useSummary } from '../../hooks/useSummary'
 
 export function Summary() {
   const theme = useTheme()
+  const summary = useSummary()
 
   return (
     <SummaryContainer>
@@ -18,7 +21,7 @@ export function Summary() {
           <ArrowCircleUp size={32} color={theme['green-300']} />
         </header>
 
-        <strong>R$ 17.400,00</strong>
+        <strong>{currencyFormatter.format(summary.income)}</strong>
       </SummaryCard>
 
       <SummaryCard>
@@ -27,16 +30,16 @@ export function Summary() {
           <ArrowCircleDown size={32} color={theme['red-300']} />
         </header>
 
-        <strong>R$ 17.400,00</strong>
+        <strong>{currencyFormatter.format(summary.outcome)}</strong>
       </SummaryCard>
 
-      <SummaryCard variant="green">
+      <SummaryCard variant={summary.total >= 0 ? 'green' : 'red'}>
         <header>
           <span>Total</span>
           <CurrencyDollar size={32} color={theme.white} />
         </header>
 
-        <strong>R$ 17.400,00</strong>
+        <strong>{currencyFormatter.format(summary.total)}</strong>
       </SummaryCard>
     </SummaryContainer>
   )
